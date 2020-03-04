@@ -29,7 +29,7 @@ cap = cv2.VideoCapture('road.mp4')
 fgbg = cv2.createBackgroundSubtractorMOG2()
 while(1):
     ret, frame = cap.read()
-    frame = frame[300:, 700:1300]
+    frame = frame[100:, 300:1200]
     if (ret == True):        
         fgmask = fgbg.apply(frame)
         cv2.imshow('frame',fgmask)
