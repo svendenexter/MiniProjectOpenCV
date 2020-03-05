@@ -62,15 +62,17 @@ new_car = 0
 car_counter = 0
 while(1):   
     ret, frame = cap.read()
+#    if (frame.empty()
     if (ret == True):
         #    framecropped = frame[300:600, 100:1800]
-        framecropped = frame[200:1000, 600:780]
-        h,w=framecropped.shape[0:2]
+#        frame = frame[200:1000, 600:780]
+        h,w=frame.shape[0:2]
         base_size=h+100,w+100,3
-        # make a 3 channel image for base which is slightly larger than target img
+#        # make a 3 channel image for base which is slightly larger than target img
         base=np.zeros(base_size,dtype=np.uint8)
-#        cv2.rectangle(base,(0,0),(w+20,h+20),(255,255,255),30) # really thick white rectangle
-        base[50:h+50,50:w+50]=framecropped # this works
+#      #  cv2.rectangle(base,(0,0),(w+20,h+20),(255,255,255),30) # really thick white rectangle
+        base[50:h+50,50:w+50]=frame # this works
+        
         fgmask = fgbg.apply(base) # background filter
         closing = cv2.morphologyEx(fgmask, cv2.MORPH_CLOSE, kernel) # closing the blob
 #        erosion = cv2.erode(fgmask,kernel,iterations =1)   # is not used
@@ -88,11 +90,15 @@ while(1):
             car_point = keypoints[0].pt
             print (car_point)
             cv2.circle(im_with_keypoints,(int (car_point[0]),int (car_point[1])), 63, (0,0,255), -1)
+            
             if (car_point[1] > last_car_point[1]):
                 new_car = 1
             if (new_car == 1):
                 car_counter = car_counter + 1
                 new_car = 0
+            cv2.putText(im_with_keypoints, str(car_counter),(int(car_point[0]-20),int (car_point[1]+20)), cv2.FONT_ITALIC, 2,(0,0,0),2,cv2.LINE_AA)     
+        
+        
         print(new_car)
         print("counted cars  = ",car_counter)
 
@@ -101,9 +107,9 @@ while(1):
         cv2.imshow('frame1',closing)    
         cv2.imshow("Keypoints", im_with_keypoints)
             
-        k = cv2.waitKey(30) & 0xff
-        if k == 27:
-            break
+    k = cv2.waitKey(30) & 0xff
+    if k == 27:
+        break
 
 cap.release()
 cv2.destroyAllWindows()
